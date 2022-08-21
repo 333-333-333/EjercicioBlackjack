@@ -49,7 +49,6 @@ public class main {
                 }
             }
         }
-
         barajar(mazo);
         return mazo;
     }
@@ -73,11 +72,9 @@ public class main {
         for (int i = 0; i < mano.length; i++) {
             aux[i] = mano[i];
         }
-
         String carta = "";
         if (!mazo[mazo.length - 1][1].equals("1")) {
             carta = mazo[mazo.length - 1][0] + mazo[mazo.length - 1][1];
-
         } else {
             boolean preguntarValor = esHumano;
             do {
@@ -109,7 +106,6 @@ public class main {
         for (int i = 0; i < aux.length; i++) {
             mano[i] = aux[i];
         }
-
         mano[mano.length - 1] = carta;
         return mano;
     }
@@ -201,7 +197,7 @@ public class main {
     }
     public static void barajar(String[][] mazo) {
         for (int i = 0; i < mazo.length; i++) {
-            int aux = (int) (Math.random() * 42);
+            int aux = (int) (Math.random() * 52);
             String[] temp = mazo[aux];
             mazo[aux] = mazo[i];
             mazo[i] = temp;
@@ -221,7 +217,6 @@ public class main {
         String[] manoJugador = crearMano(mazo,true);
         mazo = repartir(mazo);
         String[] manoCPU = new String[0];
-        System.out.println("\n[BLACKJACK]\n");
         boolean juego = true;
         do {
             System.out.println("Tus cartas: ");
