@@ -9,18 +9,17 @@ public class main {
     //Objetos globales.
         public static Scanner input = new Scanner(System.in);
         public static String[] pintas = {" de diamante", " de corazón", " de pica", " de trébol"};
-        
     //Para legibibilidad del código, cree las dos siguientes funciones:
         public static int valorCarta(String carta) {
             for (String pinta : pintas) {
                 carta = carta.replaceAll(pinta, "");
             }
-            return (int) Integer.parseInt(carta);
+            return Integer.parseInt(carta);
         }
         public static int valorMano(String[] mano) {
             int[] valoresCarta = new int[mano.length];
             for (int i = 0; i < mano.length; i++) {
-                valoresCarta[i] = (int) valorCarta(mano[i]);
+                valoresCarta[i] = valorCarta(mano[i]);
             }
             int valorTotal = 0;
             for (int valor : valoresCarta) {
@@ -29,28 +28,22 @@ public class main {
             return valorTotal;
         }
         //Para el caso humano:
-        public static String preguntarValorAs() {
-            System.out.println("¿Que valor deseas que tome el As?\n[A] 1\n[B] 11");
-            String opcion = input.nextLine();
-            switch (opcion) {
-                case "A":
-                    return "1";
-                case "B":
-                    return "11";
-                default:
-                    System.out.println("No se ha seleccionado una opción, ingresela nuevamente.");
-                    return preguntarValorAs();
-            }
-        }
-        //Para el caso CPU:
-        public static String preguntarValorAs(int opcion){
-            switch ((opcion)){
-                case 0:
-                    return "1";
-                case 1:
-                    return "11";
-                default:
-                    return "-1";
+        public static String preguntarValorAs(boolean esHumano) {
+            if (esHumano) {
+                System.out.println("¿Que valor deseas que tome el As?\n[A] 1\n[B] 11");
+                String opcion = input.nextLine();
+                return switch (opcion) {
+                    case "A" -> "1";
+                    case "B" -> "11";
+                    default -> preguntarValorAs(true);
+                };
+            } else {
+                int i = (int) (Math.random()*2);
+                return switch (i) {
+                    case 0 -> "1";
+                    case 1 -> "11";
+                    default -> "-1";
+                };
             }
         }
         public static void mostrarCartas(String[] mano) {
@@ -84,37 +77,45 @@ public class main {
         }
         public static String[][] repartir(String[][] mazo) {
             String[][] mazoNuevo = new String[mazo.length - 1][2];
-            for (int j = 0; j < mazoNuevo.length; j++) {
-                mazoNuevo[j] = mazo[j];
-                mazoNuevo[j] = mazo[j];
-            }
+            System.arraycopy(mazo, 0, mazoNuevo, 0, mazoNuevo.length);
             return mazoNuevo;
-
-        }
-        public static String[] crearMano(String[][] mazo, boolean esHumano) {
-            String[] mano = new String[0];
-            mano = pedirCarta(mazo, mano, esHumano);
-            return mano;
         }
         public static String[] pedirCarta(String[][] mazo, String[] mano, boolean esHumano) {
-            String[] retorno = new String[mano.length + 1];
-            for (int i = 0; i < mano.length; i++) {
-                retorno[i] = mano[i];
-            }
+            String[] manoNueva = new String[mano.length + 1];
+            System.arraycopy(mano, 0, manoNueva, 0, mano.length);
             String carta = "";
-            if (!mazo[mazo.length - 1][0].equals("1")) {
-                carta = mazo[mazo.length - 1][0];
+            if ("1".equals(mazo[mazo.length - 1][0])) {
+                carta += preguntarValorAs(esHumano) + mazo[mazo.length - 1][1];
             } else {
-                if (esHumano) {
-                    carta = (String) preguntarValorAs();
-                } else {
-                    int valorAs = (int) (Math.random() * 2);
-                    carta = (String) preguntarValorAs(valorAs);
+                carta += mazo[mazo.length - 1][0] + mazo[mazo.length - 1][1];
+            }
+            manoNueva[manoNueva.length - 1] = carta;
+            return manoNueva;
+        }
+        public static String[] crearMano(String[][] mazo, boolean esHumano) {
+            return pedirCarta(mazo, new String[0], esHumano);
+        }
+        public static boolean verificarGanador(String[] manoJugador, String[] manoCPU) {
+            switch (valorMano(manoCPU)) {
+                case 0 -> {
+                    System.out.println("Valor de tu mano: " + valorMano(manoJugador));
+                    return (valorMano(manoJugador) <= 21);
+                }
+                case 11, 21 -> {
+                    System.out.println("\nMano de la CPU:");
+                    mostrarCartas(manoCPU);
+                    System.out.println("\nTu mano:");
+                    mostrarCartas(manoJugador);
+                    return (!esBlackjack(manoCPU) && esBlackjack(manoJugador));
+                }
+                default -> {
+                    System.out.println("\nMano de la CPU:");
+                    mostrarCartas(manoCPU);
+                    System.out.println("\nTu mano:");
+                    mostrarCartas(manoJugador);
+                    return ((valorMano(manoJugador) <= 21 && (valorMano(manoJugador) > valorMano(manoCPU) || valorMano(manoCPU) >= 21)));
                 }
             }
-            carta+= mazo[mazo.length - 1][1];
-            retorno[retorno.length - 1] = carta;
-            return retorno;
         }
         public static boolean esBlackjack(String[] mano) {
             boolean contiene10 = false;
@@ -126,46 +127,49 @@ public class main {
                 if (valorCarta(carta) == 1 || valorCarta(carta) == 11) {
                     contieneAs = true;
                 }
-                if (contiene10 && contieneAs) {
-                    System.out.println("Tienes un As y un 10, tienes mucha suerte.");
-                }
             }
             return (valorMano(mano)==21 || (mano.length == 2 && (contiene10 && contieneAs)));
         }
-        public static boolean verificarGanador(String[] manoJugador, String[] manoCPU) {
-            if (valorMano(manoCPU)!=0){
-                System.out.println("\nMano de la CPU:");
-                mostrarCartas(manoCPU);
-                System.out.println("\nTu mano:");
-                mostrarCartas(manoJugador);
-                System.out.println("\nValor de tu mano vs la mano de la CPU: ["+valorMano(manoJugador)+"] v/s ["+valorMano(manoCPU)+"]");
-                return ((valorMano(manoJugador)>valorMano(manoCPU) && valorMano(manoJugador)<=21)||valorMano(manoJugador)<=21 && valorMano(manoCPU)>21);
-            } else {
-                System.out.println("Valor de tu mano: "+valorMano(manoJugador));
-                return (valorMano(manoJugador)<=21);
-                }
-            }
-        public static void bajarse(String[][] mazo, String[] manoJugador, String[] manoCPU) {
-            manoCPU = crearMano(mazo, false);
+        public static void bajarse(String[][] mazo, String[] manoJugador) {
+            String[] manoCPU = crearMano(mazo, false);
             mazo = repartir(mazo);
-            boolean sacarCPU = true;
-            while (sacarCPU) {
+            int arriesgarse = 0;
+            while (valorMano(manoCPU)<21 && arriesgarse==0) {
                 manoCPU = pedirCarta(mazo, manoCPU, false);
                 mazo = repartir(mazo);
-                if (valorMano(manoCPU)>=21){
-                    sacarCPU = false;
-                } else if (valorMano(manoCPU)>=11 &&valorMano(manoCPU)<21 ){
-                    int arriesgarse = (int)(Math.random()*2);
-                        if (arriesgarse==0) {
-                            sacarCPU = false;
-                        }
-                    }
+                if (valorMano(manoCPU)>=11 &&valorMano(manoCPU)<21 ){
+                    arriesgarse = (int)(Math.random()*2);
                 }
-            if (verificarGanador(manoJugador,manoCPU)){
+            }
+            if (verificarGanador(manoJugador, manoCPU)){
                 System.out.println("\nGanaste.");
             } else {
                 System.out.println("\nPerdiste.");
             }
+        }
+        public static void jugar(String[][] mazo, String[] manoJugador) {
+            boolean juego = true;
+            do {
+                System.out.println("Tus cartas: ");
+                mostrarCartas(manoJugador);
+                System.out.println("\n¿Que deseas hacer? \n[A] Robar carta \n[B] Bajarse ");
+                switch (input.nextLine()) {
+                    case "A" -> {
+                        manoJugador = pedirCarta(mazo, manoJugador, true);
+                        mazo = repartir(mazo);
+                        System.out.println("Se robó la carta " + manoJugador[manoJugador.length - 1]);
+                    }
+                    case "B" -> {
+                        bajarse(mazo, manoJugador);
+                        juego = false;
+                    }
+                    default -> System.out.println("No se reconoce la opción.");
+                }
+                if (juego) {
+                    System.out.println("Valor de tu mano: "+valorMano(manoJugador));
+                }
+            } while ((juego && valorMano(manoJugador)<=21) && !esBlackjack(manoJugador));
+            mostrarMenu();
         }
         public static void barajar(String[][] mazo) {
             for (int i = 0; i < mazo.length; i++) {
@@ -176,49 +180,19 @@ public class main {
             }
         }
         public static void mostrarMenu() {
-
             System.out.println("\n[MOSTRANDO MENÚ] \n¿Qué deseas hacer? \n[A] Jugar \n[Otro] Salir.");
             String opcion = input.nextLine();
             if (opcion.equals("A")) {
-                jugar();
+                String[][] mazo = crearMazo();
+                String[] manoJugador = crearMano(mazo,true);
+                mazo = repartir(mazo);
+                jugar(mazo, manoJugador);
             } else {
                 System.out.println("Fin del juego.");
             }
         }
-        public static void jugar() {
-            String[][] mazo = crearMazo();
-            String[] manoJugador = crearMano(mazo,true);
-            mazo = repartir(mazo);
-            String[] manoCPU = new String[0];
-
-            boolean juego = true;
-            do {
-                System.out.println("Tus cartas: ");
-                mostrarCartas(manoJugador);
-                System.out.println("\n¿Que deseas hacer? \n[A] Robar carta \n[B] Bajarse");
-                String opcion = input.nextLine();
-                switch (opcion) {
-                    case "A":
-                        manoJugador = pedirCarta(mazo, manoJugador, true);
-                        mazo = repartir(mazo);
-                        System.out.println("Se robó la carta "+manoJugador[manoJugador.length-1]);
-                        break;
-                    case "B":
-                        bajarse(mazo, manoJugador, manoCPU);
-                        juego = false;
-                        break;
-                    default:
-                        System.out.println("No se reconoce la opción.");
-                }
-            } while (juego && valorMano(manoJugador)<=21);
-            if(valorMano(manoJugador)>21){
-                System.out.println("Perdiste. ");
-            }
-            mostrarMenu();
-        }
 
 }
-
     /*
     Finalmente, quisiera dejar como duda el cómo se debe comportar la CPU, ya que solamente se explica que debe sacar cartas una vez que
     se baje el jugador, pero no de que forma.
