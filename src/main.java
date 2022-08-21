@@ -137,7 +137,7 @@ public class main {
             while (valorMano(manoCPU)<21 && arriesgarse==0) {
                 manoCPU = pedirCarta(mazo, manoCPU, false);
                 mazo = repartir(mazo);
-                if (valorMano(manoCPU)>=11 &&valorMano(manoCPU)<21 ){
+                if (valorMano(manoCPU)>=17 &&valorMano(manoCPU)<21 ){
                     arriesgarse = (int)(Math.random()*2);
                 }
             }
