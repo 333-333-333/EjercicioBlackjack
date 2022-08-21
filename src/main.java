@@ -186,6 +186,8 @@ public class main {
                 String[][] mazo = crearMazo();
                 String[] manoJugador = crearMano(mazo,true);
                 mazo = repartir(mazo);
+                manoJugador=pedirCarta(mazo,true);
+                mazo = repartir(mazo);
                 jugar(mazo, manoJugador);
             } else {
                 System.out.println("Fin del juego.");
