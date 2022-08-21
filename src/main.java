@@ -9,55 +9,55 @@ public class main {
     //Objetos globales.
         public static Scanner input = new Scanner(System.in);
         public static String[] pintas = {" de diamante", " de corazón", " de pica", " de trébol"};
-
+        
     //Para legibibilidad del código, cree las dos siguientes funciones:
         public static int valorCarta(String carta) {
-        for (String pinta : pintas) {
-            carta = carta.replaceAll(pinta, "");
+            for (String pinta : pintas) {
+                carta = carta.replaceAll(pinta, "");
+            }
+            return (int) Integer.parseInt(carta);
         }
-        return (int) Integer.parseInt(carta);
-    }
         public static int valorMano(String[] mano) {
-        int[] valoresCarta = new int[mano.length];
-        for (int i = 0; i < mano.length; i++) {
-            valoresCarta[i] = (int) valorCarta(mano[i]);
+            int[] valoresCarta = new int[mano.length];
+            for (int i = 0; i < mano.length; i++) {
+                valoresCarta[i] = (int) valorCarta(mano[i]);
+            }
+            int valorTotal = 0;
+            for (int valor : valoresCarta) {
+                valorTotal += valor;
+            }
+            return valorTotal;
         }
-        int valorTotal = 0;
-        for (int valor : valoresCarta) {
-            valorTotal += valor;
-        }
-        return valorTotal;
-    }
         //Para el caso humano:
         public static String preguntarValorAs() {
-        System.out.println("¿Que valor deseas que tome el As?\n[A] 1\n[B] 11");
-        String opcion = input.nextLine();
-        switch (opcion) {
-            case "A":
-                return "1";
-            case "B":
-                return "11";
-            default:
-                System.out.println("No se ha seleccionado una opción, ingresela nuevamente.");
-                return preguntarValorAs();
+            System.out.println("¿Que valor deseas que tome el As?\n[A] 1\n[B] 11");
+            String opcion = input.nextLine();
+            switch (opcion) {
+                case "A":
+                    return "1";
+                case "B":
+                    return "11";
+                default:
+                    System.out.println("No se ha seleccionado una opción, ingresela nuevamente.");
+                    return preguntarValorAs();
+            }
         }
-    }
         //Para el caso CPU:
         public static String preguntarValorAs(int opcion){
-        switch ((opcion)){
-            case 0:
-                return "1";
-            case 1:
-                return "11";
-            default:
-                return "-1";
+            switch ((opcion)){
+                case 0:
+                    return "1";
+                case 1:
+                    return "11";
+                default:
+                    return "-1";
+            }
         }
-    }
         public static void mostrarCartas(String[] mano) {
-        for (String carta : mano) {
-            System.out.println(carta);
+            for (String carta : mano) {
+                System.out.println(carta);
+            }
         }
-    }
         public static void mostrarMazo(String[][] mazo){
             for (String[] datosOrdenados : mazo){
                 System.out.println(datosOrdenados[0]+" "+datosOrdenados[1]);
