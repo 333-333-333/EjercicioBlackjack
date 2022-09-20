@@ -325,7 +325,7 @@ class mainTest {
         ArrayList<String> particion2 = new ArrayList<>(Arrays.asList("2 de pica"));
         ArrayList<ArrayList<String>> jugadoresEsperados = new ArrayList<>(Arrays.asList(particion1, particion2));
 
-        main.partirMano(jugadoresActivos, manoTest);
+        main.partirMano(jugadoresActivos, manoTest, false);
         assertNotEquals(jugadoresEsperados, jugadoresActivos);
     }
 
@@ -340,7 +340,7 @@ class mainTest {
         ArrayList<String> particion2 = new ArrayList<>(Arrays.asList("D de pica"));
         ArrayList<ArrayList<String>> jugadoresEsperados = new ArrayList<>(Arrays.asList(particion1, particion2));
 
-        main.partirMano(jugadoresActivos, manoTest);
+        main.partirMano(jugadoresActivos, manoTest, false);
         assertEquals(jugadoresEsperados, jugadoresActivos);
     }
 
@@ -354,7 +354,7 @@ class mainTest {
         ArrayList<String> particion2 = new ArrayList<>(Arrays.asList("9 de pica", "2 de trébol"));
         ArrayList<ArrayList<String>> jugadoresEsperados = new ArrayList<>(Arrays.asList(particion1, particion2));
 
-        main.partirMano(jugadoresActivos, manoTest);
+        main.partirMano(jugadoresActivos, manoTest, false);
         assertEquals(jugadoresEsperados, jugadoresActivos);
     }
 
@@ -365,7 +365,7 @@ class mainTest {
         ArrayList<ArrayList<String>> jugadoresActivos = new ArrayList<>(List.of(manoTest));
 
         assertThrows(ArrayIndexOutOfBoundsException.class,
-                () -> main.partirMano(jugadoresActivos, manoTest),
+                () -> main.partirMano(jugadoresActivos, manoTest, false),
                 "Uno de los arreglos está vacío.");
     }
 
@@ -377,8 +377,19 @@ class mainTest {
         jugadoresActivos.add(manoTest);
 
         assertThrows(NullPointerException.class,
-                () -> main.partirMano(jugadoresActivos, manoTest),
+                () -> main.partirMano(jugadoresActivos, manoTest, false),
                 "Uno de los arreglos es un null.");
+    }
+
+    @Test
+    @DisplayName("[partirMano] Test para comprobar si no parte la mano si es que viene de una mano partida.")
+    public void testPartirManoPartida() {
+        ArrayList<String> manoTest = new ArrayList<>(Arrays.asList("D de diamante", "9 de pica", "2 de trébol"));
+        ArrayList<ArrayList<String>> jugadoresActivos = new ArrayList<>(List.of(manoTest));
+        ArrayList<ArrayList<String>> jugadoresEsperados = new ArrayList<>(List.of(manoTest));
+
+        main.partirMano(jugadoresActivos, manoTest, true);
+        assertEquals(jugadoresEsperados, jugadoresActivos);
     }
 }
 
