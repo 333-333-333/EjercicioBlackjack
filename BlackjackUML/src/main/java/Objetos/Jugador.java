@@ -52,6 +52,10 @@ public class Jugador {
 		return this.Fondos;
 	}
 
+	public String getNombre() {
+		return this.Nombre;
+	}
+
 	public void setApuesta(int apuesta) {
 		this.Apuesta = apuesta;
 	}
