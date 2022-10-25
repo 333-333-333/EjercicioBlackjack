@@ -3,6 +3,7 @@ import Enums.*;
 import Objetos.*;
 import Utilidades.Validaciones;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Juego {
@@ -10,11 +11,12 @@ public class Juego {
 	private Baraja Baraja;
 	private int Apuesta, Fondos;
 	private List<Jugador> Jugadores;
+	private Jugador Dealer;
 
 	public Juego () {
 		this.Baraja = new Baraja();
 		this.Fondos = 0;
-		this.Jugadores.clear();
+		this.Jugadores = new ArrayList<>();
 		crearJuego();
 	}
 
@@ -51,9 +53,15 @@ public class Juego {
 	private boolean seguirIngresandoJugadores() {
 		System.out.println("¿Deseas añadir más jugadores? [1] Si, [2] No");
 		switch (Validaciones.validarInt(1, 2)) {
-			case 1: return true;
-			case 2: return false;
-			default: return seguirIngresandoJugadores();
+			case 1 -> {
+				return true;
+			}
+			case 2 -> {
+				return false;
+			}
+			default -> {
+				return seguirIngresandoJugadores();
+			}
 		}
 	}
 
@@ -62,7 +70,7 @@ public class Juego {
 		String nombre = Validaciones.validarString();
 		System.out.println("¿Cuántos fondos deseas asignarles al jugador?");
 		int fondos = Validaciones.validarPositivo();
-		return new Jugador(false, fondos, nombre);
+		return new Jugador(fondos, nombre);
 	}
 
 	private void ingresarJugador(Jugador jugador) {
@@ -104,16 +112,17 @@ public class Juego {
 		return hayJugadoresActivos;
 	}
 
-
-
 	public void turno(Jugador jugador) {
 		try {
 			establecerEstado(jugador);
+			System.out.println(jugador.toString());
 			if (jugador.getEstado() == Estado.ACTIVO) {
 				mostrarOpcionesTurno();
 				seleccionarOpcionTurno(jugador);
 			} else {
-				System.out.println("El jugador ");
+				System.out.println("El estado del jugador "
+					+ jugador.getNombre()
+					+ " es  " + jugador.getEstado().getEstado());
 			}
 		} catch (Exception e) {
 			System.err.println("[Error]\n" + e.getMessage());
@@ -132,9 +141,9 @@ public class Juego {
 
 	private void seleccionarOpcionTurno(Jugador jugador) {
 		switch (Validaciones.validarInt(1,2)) {
-			case 1: repartir(jugador);
-			case 2: bajarse(jugador);
-			default: turno(jugador);
+			case 1 -> repartir(jugador);
+			case 2 -> bajarse(jugador);
+			default -> turno(jugador);
 		}
  	}
 
@@ -155,12 +164,16 @@ public class Juego {
 
 	private void verificarPerdedor(Jugador jugador) {
 		if (jugador.valorarMano()>21) {
-			System.out.println("El jugador " );
+			System.out.println("El jugador "
+					+ jugador.getNombre()
+					+ " perdió.");
 			jugador.setEstado(Estado.PERDEDOR);
 		}
 	}
 
 	public void terminar() {
+		generarDealer();
+		comparar();
 		for (Jugador jugador : this.Jugadores) {
 			repartirApuesta(jugador);
 			System.out.println(jugador.toString());
@@ -182,4 +195,33 @@ public class Juego {
 		jugador.setApuesta(0);
 	}
 
+	private void generarDealer() {
+		this.Dealer = new Jugador(this.Apuesta, "DEALER");
+		this.ingresarJugador(this.Dealer);
+		if (!(this.Dealer.tieneBlackjack()||this.Dealer.valorarMano()==21)) {
+			int numAleatorio = 0;
+			do {
+				numAleatorio = (int) (Math.random() * 2);
+				if (numAleatorio == 0)  {
+					this.Dealer.pedirCarta(this.Baraja);
+				}
+			} while(numAleatorio == 0 || this.Dealer.valorarMano() < 17);
+		}
+		if (this.Dealer.valorarMano() > 21) {
+			this.Dealer.setEstado(Estado.PERDEDOR);
+		}
+	}
+
+	private void comparar() {
+		if (this.Dealer.getEstado() == Estado.ACTIVO) {
+			for (Jugador jugador : this.Jugadores) {
+				if (jugador.valorarMano() <= this.Dealer.valorarMano()) {
+					jugador.setEstado(Estado.PERDEDOR);
+				} else {
+					jugador.setEstado(Estado.GANADOR);
+				}
+			}
+		}
+
+	}
 }

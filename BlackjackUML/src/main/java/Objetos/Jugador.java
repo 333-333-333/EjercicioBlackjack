@@ -5,17 +5,16 @@ import Enums.Estado;
 public class Jugador {
 
 	private int Apuesta;
-	private boolean Dealer;
 	private Enums.Estado Estado;
 	private int Fondos;
 	private Mano Mano;
 	private String Nombre;
 
-	public Jugador(boolean dealer, int fondos, String nombre) {
+	public Jugador(int fondos, String nombre) {
 		this.Apuesta = 0;
-		this.Dealer = dealer;
 		this.Estado = Estado.CREADO;
 		this.Fondos = fondos;
+		this.Mano = new Mano();
 		this.Nombre = nombre;
 	}
 
@@ -44,6 +43,10 @@ public class Jugador {
 		return this.Apuesta;
 	}
 
+	public int getCantidadCartas() {
+		return this.Mano.obtenerCantidadCartas();
+	}
+
 	public Estado getEstado() {
 		return this.Estado;
 	}
@@ -66,6 +69,10 @@ public class Jugador {
 
 	public void setFondos(int fondos) {
 		this.Fondos = fondos;
+	}
+
+	public void setMano(Mano mano) {
+		this.Mano = mano;
 	}
 
 	@Override

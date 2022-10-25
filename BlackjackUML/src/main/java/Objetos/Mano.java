@@ -1,11 +1,17 @@
 package Objetos;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Mano {
 
 	private List<Carta> Cartas;
 
+	public Mano() {
+		this.Cartas = new ArrayList<>();
+	}
+
+	// Testeado
 	public int obtenerValor() {
 		if (this.Cartas.size() == 0) {
 			throw new ArrayIndexOutOfBoundsException("La mano está vacía.");
@@ -20,14 +26,22 @@ public class Mano {
 		return valorMano;
 	}
 
+	// Testeado
 	public void robarCarta(Baraja baraja) {
-		this.Cartas.add(baraja.darCarta());
+		agregarCarta(baraja.darCarta());
 	}
 
+	// Testeado
+	public void agregarCarta(Carta carta){
+		this.Cartas.add(carta);
+	}
+
+	// Testeado
 	public int obtenerCantidadCartas() {
 		return this.Cartas.size();
 	}
 
+	// Testeado
 	public boolean contieneAs() {
 		if (this.Cartas.size() == 0) {
 			throw new ArrayIndexOutOfBoundsException("La mano está vacía.");

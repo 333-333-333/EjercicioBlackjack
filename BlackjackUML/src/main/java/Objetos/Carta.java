@@ -1,7 +1,6 @@
 package Objetos;
 
-import Enums.Indice;
-import Enums.Pinta;
+import Enums.*;
 
 public class Carta {
 
