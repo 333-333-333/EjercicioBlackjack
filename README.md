@@ -15,10 +15,13 @@ de Visual Paradigm.
 
 | Clase      | Relacionada | Tipo de relación | Sentido        | Cardinalidad |
 |------------|-------------|------------------|----------------|--------------|
-| Jugador    | Mano        | Asociación       | Unidireccional | 1            |
-| Mano       | Carta       | Agregación       | Unidireccional | 0..*         |
 | Baraja     | Carta       | Agregación       | Unidireccional | 0..*         |
+| Carta      | Indice      | Composición      | Unidireccional | 1            |
+| Carta      | Pinta       | Composición      | Unidireccional | 1            |
 | Juego      | Baraja      | Composición      | Unidireccional | 1            |
 | Juego      | Jugador     | Agregación       | Unidireccional | 0..*         |
+| Jugador    | Estado      | Composición      | Unidireccional | 1            |
+| Jugador    | Mano        | Asociación       | Unidireccional | 1            |
 | Mano       | Baraja      | Dependencia      | Unidireccional | N/A          |
+| Mano       | Carta       | Agregación       | Unidireccional | 0..*         |
 
